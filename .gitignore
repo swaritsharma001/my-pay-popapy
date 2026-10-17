@@ -131,3 +131,6 @@ dist
 
 # Replit debugger
 .breakpoints
+
+# PopPay local configuration
+/server/.env
