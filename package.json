@@ -4,23 +4,30 @@
   "description": "A Discord bot with various commands including GIF commands using Giphy API.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "start:poppay": "node server/src/index.js",
+    "test:poppay": "node --test server/test/*.test.js"
   },
   "dependencies": {
     "@vitalets/google-translate-api": "^8.0.0",
     "axios": "^1.4.0",
+    "bcryptjs": "^3.0.3",
     "discord.js": "^14.0.3",
     "discord.js-selfbot-v13": "^3.7.1",
     "dotenv": "^16.3.1",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.7.1",
     "fetch-cookie": "^3.2.0",
     "fs": "0.0.1-security",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^7.0.0",
     "node-fetch": "^3.3.2",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "zod": "^4.6.7"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=18.0.0"
   },
   "author": "",
   "license": "ISC"
