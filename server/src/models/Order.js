@@ -18,7 +18,7 @@ const orderSchema = new mongoose.Schema(
       default: 'CREATED',
       required: true,
     },
-    redirectUrl: { type: String, required: true, trim: true, maxlength: 2048 },
+    redirectUrl: { type: String, default: null, trim: true, maxlength: 2048 },
     expiresAt: { type: Date, required: true },
     paidAt: { type: Date, default: null },
     utr: { type: String, default: null, trim: true, maxlength: 32 },
@@ -26,7 +26,11 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-orderSchema.index({ merchantId: 1, status: 1, payableAmount: 1, expiresAt: 1 });
+orderSchema.index(
+  { merchantId: 1, payableAmount: 1 },
+  { unique: true, partialFilterExpression: { status: 'PENDING' } },
+);
+orderSchema.index({ merchantId: 1, status: 1, expiresAt: 1 });
 orderSchema.index({ merchantId: 1, createdAt: -1 });
 
 module.exports = mongoose.models.Order || mongoose.model('Order', orderSchema);

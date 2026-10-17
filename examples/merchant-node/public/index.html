@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Example Shop · PopPay</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px; background: #f3f5ef; color: #142e2b; font-family: system-ui, sans-serif; }
+      main { width: min(100%, 420px); padding: 32px; border: 1px solid #e1e8e1; border-radius: 24px; background: #fffefa; box-shadow: 0 24px 70px rgba(25,61,48,.08); }
+      .mark { color: #126b58; font-weight: 800; letter-spacing: -.06em; }
+      p { color: #71817b; line-height: 1.6; }
+      button { width: 100%; min-height: 52px; border: 0; border-radius: 12px; background: #126b58; color: white; font: inherit; font-weight: 700; cursor: pointer; }
+      button:disabled { opacity: .6; cursor: wait; }
+      #message { min-height: 24px; margin-top: 14px; font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="mark">PopPay · Example Shop</p>
+      <h1>Everyday cotton tote</h1>
+      <p>₹499.00 · Direct UPI payment</p>
+      <button id="buy" type="button" disabled>Pay ₹499.00</button>
+      <p id="message" role="status" aria-live="polite"></p>
+    </main>
+    <script src="/config.js"></script>
+    <script>
+      const button = document.getElementById('buy');
+      const message = document.getElementById('message');
+      const sdk = document.createElement('script');
+      sdk.src = window.POPPAY_BASE_URL + '/checkout.js';
+      sdk.onload = () => { button.disabled = false; };
+      sdk.onerror = () => { message.textContent = 'PopPay checkout could not be loaded.'; };
+      document.head.appendChild(sdk);
+      button.addEventListener('click', async () => {
+        button.disabled = true;
+        message.textContent = 'Creating a secure payment request…';
+        try {
+          const response = await fetch('/create-order', { method: 'POST' });
+          const order = await response.json();
+          if (!response.ok) throw new Error(order.error || 'Could not create order.');
+          message.textContent = '';
+          const checkout = new PopPay({
+            key: window.POPPAY_PUBLIC_KEY,
+            order_id: order.order_id,
+            name: 'Example Shop',
+            handler: async (payment) => {
+              const verified = await fetch('/verify-payment', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify(payment),
+              }).then((result) => result.json());
+              message.textContent = verified.verified ? 'Payment verified by the merchant server.' : 'Payment verification failed.';
+            },
+            onDismiss: () => { message.textContent = 'Checkout closed.'; },
+          });
+          checkout.open();
+        } catch (error) {
+          message.textContent = error.message;
+        } finally {
+          button.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>

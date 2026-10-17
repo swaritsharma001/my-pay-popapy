@@ -13,6 +13,7 @@ const keysSchema = new mongoose.Schema(
   {
     publicKey: { type: String, default: null },
     secretKeyHash: { type: String, default: null, select: false },
+    signingSecretEncrypted: { type: String, default: null, select: false },
   },
   { _id: false },
 );
@@ -43,6 +44,10 @@ const merchantSchema = new mongoose.Schema(
 );
 
 merchantSchema.index({ 'keys.publicKey': 1 }, { unique: true, sparse: true });
+merchantSchema.index(
+  { 'keys.secretKeyHash': 1 },
+  { unique: true, sparse: true },
+);
 
 module.exports =
   mongoose.models.Merchant || mongoose.model('Merchant', merchantSchema);

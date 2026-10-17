@@ -3,6 +3,7 @@ const Merchant = require('../models/Merchant');
 const { generateMerchantCredentials } = require('../services/credentialService');
 const { createAccessToken } = require('../services/tokenService');
 const { signupSchema, loginSchema } = require('../validators/authSchemas');
+const { encryptText } = require('../utils/encryption');
 
 function validationError(res, error) {
   return res.status(400).json({
@@ -21,6 +22,7 @@ function publicMerchant(merchant) {
       email: merchant.gmail?.email || null,
       connected: Boolean(merchant.gmail?.email),
     },
+    allowedSenders: merchant.allowedSenders || [],
     publicKey: merchant.keys?.publicKey || null,
     webhookUrl: merchant.webhookUrl || null,
     createdAt: merchant.createdAt,
@@ -40,6 +42,7 @@ async function signup(req, res, next) {
       keys: {
         publicKey: credentials.publicKey,
         secretKeyHash: credentials.secretKeyHash,
+        signingSecretEncrypted: encryptText(credentials.signingSecret),
       },
       webhookSecret: credentials.webhookSecret,
     });
@@ -52,6 +55,7 @@ async function signup(req, res, next) {
       credentials: {
         publicKey: credentials.publicKey,
         secretKey: credentials.secretKey,
+        signingSecret: credentials.signingSecret,
         webhookSecret: credentials.webhookSecret,
       },
     });

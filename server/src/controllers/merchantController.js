@@ -2,6 +2,7 @@ const Merchant = require('../models/Merchant');
 const { generateMerchantCredentials } = require('../services/credentialService');
 const { validationError } = require('./authController');
 const { upiBodySchema, webhookBodySchema } = require('../validators/merchantSchemas');
+const { encryptText } = require('../utils/encryption');
 
 async function updateUpi(req, res, next) {
   const parsed = upiBodySchema.safeParse(req.body);
@@ -27,6 +28,7 @@ async function regenerateKeys(req, res, next) {
     merchant.keys = {
       publicKey: credentials.publicKey,
       secretKeyHash: credentials.secretKeyHash,
+      signingSecretEncrypted: encryptText(credentials.signingSecret),
     };
     merchant.webhookSecret = credentials.webhookSecret;
     await merchant.save();
@@ -36,6 +38,7 @@ async function regenerateKeys(req, res, next) {
       credentials: {
         publicKey: credentials.publicKey,
         secretKey: credentials.secretKey,
+        signingSecret: credentials.signingSecret,
         webhookSecret: credentials.webhookSecret,
       },
     });

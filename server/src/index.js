@@ -3,16 +3,19 @@ require('./config');
 const mongoose = require('mongoose');
 const app = require('./app');
 const { getRequiredEnv } = require('./config');
+const { startWorkerLoop, stopWorkerLoop } = require('./workers/workerLoop');
 
 async function start() {
   await mongoose.connect(getRequiredEnv('MONGO_URI'));
-  const port = 3001;
+  startWorkerLoop();
+  const port = Number(process.env.PORT) || 3001;
   const server = app.listen(port, '0.0.0.0', () => {
     console.log(`PopPay API listening on port ${port}`);
   });
 
   const shutdown = async () => {
     server.close(async () => {
+      stopWorkerLoop();
       await mongoose.disconnect();
       process.exit(0);
     });
@@ -23,7 +26,8 @@ async function start() {
 
 if (require.main === module) {
   start().catch((error) => {
-    console.error(`PopPay API could not start: ${error.message}`);
+    // Never print configuration values or raw driver errors, which may contain a URI.
+    console.error(`PopPay API could not start: ${error.name || 'Error'}`);
     process.exit(1);
   });
 }

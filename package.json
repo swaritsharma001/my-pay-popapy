@@ -6,12 +6,21 @@
   "scripts": {
     "start": "node index.js",
     "start:poppay": "node server/src/index.js",
-    "test:poppay": "node --test server/test/*.test.js"
+    "test:poppay": "node --test server/test/*.test.js",
+    "dev:server": "node --watch server/src/index.js",
+    "dev:client": "vite --config client/vite.config.mjs",
+    "dev:poppay": "concurrently -k -n API,WEB \"npm:dev:server\" \"npm:dev:client\"",
+    "build:client": "vite build --config client/vite.config.mjs"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
     "@vitalets/google-translate-api": "^8.0.0",
+    "@vitejs/plugin-react": "^4.7.0",
     "axios": "^1.4.0",
     "bcryptjs": "^3.0.3",
+    "concurrently": "^10.0.6",
+    "cors": "^2.8.6",
+    "dayjs": "^1.11.23",
     "discord.js": "^14.0.3",
     "discord.js-selfbot-v13": "^3.7.1",
     "dotenv": "^16.3.1",
@@ -19,11 +28,19 @@
     "express-rate-limit": "^8.7.1",
     "fetch-cookie": "^3.2.0",
     "fs": "0.0.1-security",
+    "googleapis": "^186.0.0",
     "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
+    "lucide-react": "^1.59.0",
     "mongoose": "^7.0.0",
     "node-fetch": "^3.3.2",
     "path": "^0.12.7",
+    "qrcode": "^1.5.4",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.4",
+    "tailwindcss": "^4.3.3",
+    "vite": "^6.4.4",
     "zod": "^4.6.7"
   },
   "engines": {

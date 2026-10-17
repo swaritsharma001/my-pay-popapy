@@ -1,5 +1,13 @@
 const mongoose = require('mongoose');
 
+const attemptSchema = new mongoose.Schema(
+  {
+    attemptedAt: { type: Date, required: true },
+    responseStatus: { type: Number, default: null },
+  },
+  { _id: false },
+);
+
 const webhookLogSchema = new mongoose.Schema(
   {
     merchantId: {
@@ -12,6 +20,7 @@ const webhookLogSchema = new mongoose.Schema(
     responseStatus: { type: Number, default: null },
     attempts: { type: Number, default: 0, min: 0, max: 6 },
     nextRetryAt: { type: Date, default: Date.now, index: true },
+    attemptHistory: { type: [attemptSchema], default: [] },
   },
   { timestamps: true },
 );

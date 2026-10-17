@@ -9,6 +9,7 @@ const unmatchedPaymentSchema = new mongoose.Schema(
     },
     utr: { type: String, required: true, unique: true, trim: true },
     amount: { type: mongoose.Schema.Types.Decimal128, required: true },
+    gmailMessageId: { type: String, required: true, unique: true, trim: true },
     receivedAt: { type: Date, required: true },
     status: {
       type: String,
